@@ -24,14 +24,14 @@ __version__ = "${VERSION}"
 
 _DEFAULT_CONFIG = {
     'plugin': {
-         'description': 'EnviroHat poll plugin',
+         'description': 'Enviro pHAT Poll Plugin',
          'type': 'string',
-         'default': 'envhatpoll'
+         'default': 'envirophat'
     },
     'pollInterval': {
         'description': 'The interval between poll calls to the South device poll routine expressed in milliseconds.',
         'type': 'integer',
-        'default': '500'
+        'default': '1000'
     },
 }
 
@@ -48,7 +48,7 @@ def plugin_info():
     """
 
     return {
-        'name': 'EnviroHat Poll plugin',
+        'name': 'Enviro pHAT Poll Plugin',
         'version': '1.0',
         'mode': 'poll',
         'type': 'south',
@@ -96,7 +96,7 @@ def plugin_poll(handle):
         temperature = weather.temperature()
         pressure = weather.pressure(unit=unit)
         data.append({
-                'asset': 'EnviroHat/rgb',
+                'asset': 'envirophat/rgb',
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -106,7 +106,7 @@ def plugin_poll(handle):
                 }
             })
         data.append({
-                'asset': 'EnviroHat/magnetometer',
+                'asset': 'envirophat/magnetometer',
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -116,7 +116,7 @@ def plugin_poll(handle):
                 }
             })
         data.append({
-                'asset': 'EnviroHat/accelerometer',
+                'asset': 'envirophat/accelerometer',
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -126,7 +126,7 @@ def plugin_poll(handle):
                 }
             })
         data.append({
-                'asset': 'EnviroHat/weather',
+                'asset': 'envirophat/weather',
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -136,10 +136,10 @@ def plugin_poll(handle):
                 }
             })
     except (Exception, RuntimeError, pexpect.exceptions.TIMEOUT) as ex:
-        _LOGGER.exception("EnviroHat exception: {}".format(str(ex)))
+        _LOGGER.exception("Enviro pHAT exception: {}".format(str(ex)))
         raise exceptions.DataRetrievalError(ex)
 
-    _LOGGER.debug("EnviroHat reading: {}".format(json.dumps(data)))
+    _LOGGER.debug("Enviro pHAT reading: {}".format(json.dumps(data)))
     return data
 
 
@@ -156,7 +156,7 @@ def plugin_reconfigure(handle, new_config):
         new_handle: new handle to be used in the future calls
     Raises:
     """
-    _LOGGER.info("Old config for ENVHATPOLL plugin {} \n new config {}".format(handle, new_config))
+    _LOGGER.info("Old config for Enviro pHAT plugin {} \n new config {}".format(handle, new_config))
 
     # Find diff between old config and new config
     diff = utils.get_diff(handle, new_config)
@@ -179,7 +179,7 @@ def _plugin_stop(handle):
     Returns:
     Raises:
     """
-    _LOGGER.info('EnviroHat poll plugin stop.')
+    _LOGGER.info('Enviro pHAT poll plugin stop.')
 
 
 def plugin_shutdown(handle):
@@ -191,4 +191,4 @@ def plugin_shutdown(handle):
     Raises:
     """
     _plugin_stop(handle)
-    _LOGGER.info('EnviroHat poll plugin shut down.')
+    _LOGGER.info('Enviro pHAT poll plugin shut down.')
