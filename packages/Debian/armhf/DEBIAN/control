@@ -1,0 +1,10 @@
+Package: foglamp-south-envirophat
+Version: 1.2
+Section: devel
+Priority: optional
+Architecture: armhf
+Depends: foglamp
+Conflicts:
+Maintainer: Dianomic Systems, Inc. <info@dianomic.com>
+Homepage: http://www.dianomic.com
+Description: South plugin for the Enviro pHAT board on a Raspberry PI
