@@ -61,7 +61,7 @@ version=`cat ${GIT_ROOT}/VERSION | tr -d ' ' | grep 'foglamp_south_envirophat_ve
 BUILD_ROOT="${GIT_ROOT}/packages/Debian/build"
 
 # Final package name
-package_name="foglamp-south-envirophaat-${version}-${architecture}"
+package_name="foglamp-south-envirophat-${version}-${architecture}"
 
 # Print the summary of findings
 echo "The package root directory is : ${GIT_ROOT}"
