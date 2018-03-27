@@ -57,7 +57,7 @@ do
 done
 
 architecture="armhf"
-version=`cat ${GIT_ROOT}/VERSION | tr -d ' ' | grep 'foglamp_south_envirophat_version=' | head -1 | sed -e 's/\(.*\)=\(.*\)/\2/g'`
+version=`cat ${GIT_ROOT}/VERSION.south.envirophat | tr -d ' ' | grep 'foglamp_south_envirophat_version=' | head -1 | sed -e 's/\(.*\)=\(.*\)/\2/g'`
 BUILD_ROOT="${GIT_ROOT}/packages/Debian/build"
 
 # Final package name
@@ -98,16 +98,9 @@ cp -R ${GIT_ROOT}/packages/Debian/${architecture}/* .
 mkdir -p usr/local/foglamp
 cd usr/local/foglamp
 cp -R ${GIT_ROOT}/python .
+cp -R ${GIT_ROOT}/scripts .
+cp -R ${GIT_ROOT}/VERSION.south.envirophat .
 echo "Done."
-
-# Add customised files
-#echo -n "Adding FogLAMP customization..."
-
-#cp -R ${GIT_ROOT}/share/* share/postgresql/.
-#cd ${BUILD_ROOT}/${package_name}/usr/local/foglamp/plugins/storage/postgres
-#mkdir bin
-#cp ${GIT_ROOT}/scripts/* bin/.
-#echo "Done."
 
 # Build the package
 cd "${BUILD_ROOT}"
