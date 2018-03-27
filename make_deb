@@ -98,7 +98,6 @@ cp -R ${GIT_ROOT}/packages/Debian/${architecture}/* .
 mkdir -p usr/local/foglamp
 cd usr/local/foglamp
 cp -R ${GIT_ROOT}/python .
-cp -R ${GIT_ROOT}/scripts .
 cp -R ${GIT_ROOT}/VERSION.south.envirophat .
 echo "Done."
 
