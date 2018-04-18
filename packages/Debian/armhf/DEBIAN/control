@@ -1,9 +1,9 @@
 Package: foglamp-south-envirophat
-Version: 1.2
+Version: 0.0
 Section: devel
 Priority: optional
 Architecture: armhf
-Depends: foglamp
+Depends: foglamp,python3-envirophat
 Conflicts:
 Maintainer: Dianomic Systems, Inc. <info@dianomic.com>
 Homepage: http://www.dianomic.com
