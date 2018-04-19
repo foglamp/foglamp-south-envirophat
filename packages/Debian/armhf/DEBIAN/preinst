@@ -27,7 +27,7 @@
 
 set -e
 get_foglamp_script () {
-    foglamp_script=$(dpkg -L $PKG_NAME | grep 'foglamp/bin/foglamp$')
+    foglamp_script=$(dpkg -L foglamp | grep 'foglamp/bin/foglamp$')
     echo $foglamp_script
 }
 
