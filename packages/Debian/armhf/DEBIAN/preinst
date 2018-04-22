@@ -41,7 +41,6 @@ is_foglamp_running () {
 }
 
 # main
-echo "preinst begin"
 
 # exit if foglamp is not running
 IS_FOGLAMP_RUNNING=$(is_foglamp_running)
@@ -51,4 +50,3 @@ then
     exit 1
 fi
 
-echo "preinst complete"
