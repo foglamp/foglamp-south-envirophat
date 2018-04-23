@@ -32,7 +32,7 @@ set_files_ownership () {
 }
 
 add_service () {
-    output=$(curl -X POST http://localhost:8081/foglamp/service -d '{"name": "envirophat", "type": "south", "plugin": "envirophat"}')
+    output=$(curl -sX POST http://localhost:8081/foglamp/service -d '{"name": "envirophat", "type": "south", "plugin": "envirophat"}')
     service_id=$(echo $output | awk -F '"id": ' '{print $2}' | awk -F \" '{print $2}')
     echo $service_id
 }
@@ -46,6 +46,5 @@ enable_service () {
 
 set_files_ownership
 SERVICE_ID=$(add_service)
-echo $SERVICE_ID
 enable_service $SERVICE_ID
-echo "Restart foglamp"
+echo "Enviro pHAT plugin installed. Restart FogLAMP to enable the plugin."
