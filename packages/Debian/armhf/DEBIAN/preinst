@@ -18,33 +18,35 @@
 
 ##--------------------------------------------------------------------
 ##
-## @postinst DEBIAN/postinst
+## @preinst DEBIAN/preinst
 ## This script is used to execute post installation tasks.
 ##
-## Author: Ivan Zoratti
+## Author: Ivan Zoratti, Ashwin Gopalakrishnan
 ##
 ##--------------------------------------------------------------------
 
 set -e
-
-set_files_ownership () {
-    chown -R root:root /usr/local/foglamp/python/foglamp/plugins/south/envirophat
+get_foglamp_script () {
+    foglamp_script=$(dpkg -L foglamp | grep 'foglamp/bin/foglamp$')
+    echo $foglamp_script
 }
 
-add_service () {
-    output=$(curl -sX POST http://localhost:8081/foglamp/service -d '{"name": "envirophat", "type": "south", "plugin": "envirophat"}')
-    service_id=$(echo $output | awk -F '"id": ' '{print $2}' | awk -F \" '{print $2}')
-    echo $service_id
+is_foglamp_running () {
+    set +e
+    foglamp_script=$(get_foglamp_script)
+    foglamp_status_output=$($foglamp_script status 2>&1 | grep 'FogLAMP Uptime')
+    rc=$((!$?))
+    echo $rc
+    set -e
 }
 
-enable_service () {
-    service_id=$1
-    echo $service_id
-    output=$(curl -X PUT -d '{"enabled": true}' http://localhost:8081/foglamp/schedule/$service_id)
-    echo $output
-}
+# main
 
-set_files_ownership
-SERVICE_ID=$(add_service)
-enable_service $SERVICE_ID
-echo "Enviro pHAT plugin installed. Restart FogLAMP to enable the plugin."
+# exit if foglamp is not running
+IS_FOGLAMP_RUNNING=$(is_foglamp_running)
+if [ "$IS_FOGLAMP_RUNNING" -eq "0" ]
+then
+    echo "*** ERROR. FogLAMP is currently not running. Start FogLAMP and try again. ***"
+    exit 1
+fi
+
