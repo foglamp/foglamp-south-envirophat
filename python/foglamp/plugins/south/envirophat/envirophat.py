@@ -17,7 +17,7 @@ from foglamp.plugins.common import utils
 from foglamp.services.south import exceptions
 
 
-__author__ = "Ashwin Gopalakrishnan"
+__author__ = "Ashwin Gopalakrishnan, Amarendra K Sinha"
 __copyright__ = "Copyright (c) 2018 OSIsoft, LLC"
 __license__ = "Apache 2.0"
 __version__ = "${VERSION}"
@@ -32,6 +32,72 @@ _DEFAULT_CONFIG = {
         'description': 'The interval between poll calls to the South device poll routine expressed in milliseconds.',
         'type': 'integer',
         'default': '1000'
+    },
+    'assetPrefix': {
+        'description': 'Asset prefix',
+        'type': 'string',
+        'default': 'envirophat',
+        'order': '2'
+    },
+    'lightSensor': {
+        'description': 'Enable light sensor',
+        'type': 'boolean',
+        'default': 'false',
+    },
+    'lightSensorName': {
+        'description': 'Name of light sensor',
+        'type': 'string',
+        'default': 'luminance',
+    },
+    'magnetometerSensor': {
+        'description': 'Enable magnetometer sensor',
+        'type': 'boolean',
+        'default': 'false',
+    },
+    'magnetometerSensorName': {
+        'description': 'Name of magnetometer sensor',
+        'type': 'string',
+        'default': 'magnetometer',
+    },
+    'accelerometerSensor': {
+        'description': 'Enable accelerometer sensor',
+        'type': 'boolean',
+        'default': 'false',
+    },
+    'accelerometerSensorName': {
+        'description': 'Name of accelerometer sensor',
+        'type': 'string',
+        'default': 'accelerometer',
+    },
+    'altitudeSensor': {
+        'description': 'Enable altitude sensor',
+        'type': 'boolean',
+        'default': 'false',
+    },
+    'altitudeSensorName': {
+        'description': 'Name of altitude sensor',
+        'type': 'string',
+        'default': 'magnetometer',
+    },
+    'temperatureSensor': {
+        'description': 'Enable temperature sensor',
+        'type': 'boolean',
+        'default': 'true',
+    },
+    'temperatureSensorName': {
+        'description': 'Name of temperature sensor',
+        'type': 'string',
+        'default': 'temperature',
+    },
+    'pressureSensor': {
+        'description': 'Enable pressure sensor',
+        'type': 'boolean',
+        'default': 'false',
+    },
+    'pressureSensorName': {
+        'description': 'Name of pressure sensor',
+        'type': 'string',
+        'default': 'pressure',
     },
 }
 
@@ -87,59 +153,79 @@ def plugin_poll(handle):
     unit = 'hPa' # Pressure unit, can be either hPa (hectopascals) or Pa (pascals)
     time_stamp = str(datetime.datetime.now(tz=datetime.timezone.utc))
     data = list()
+    asset_prefix = handle['assetPrefix']['value']
 
     try:
-        rgb = light.rgb()
-        magnetometer = motion.magnetometer()
-        accelerometer = [round(x,2) for x in motion.accelerometer()]
-        altitude = weather.altitude() # Supply your local qnh for more accurate readings
-        temperature = weather.temperature()
-        pressure = weather.pressure(unit=unit)
-        data.append({
-                'asset': 'envirophat/rgb',
+        if handle['lightSensor']['value'] == 'true':
+            rgb = light.rgb()
+            data.append({
+                'asset': '{}_{}'.format(asset_prefix, handle['lightSensorName']['value']),
+                'timestamp': time_stamp,
+                    'key': str(uuid.uuid4()),
+                    'readings': {
+                        "r": rgb[0],
+                        "g": rgb[1],
+                        "b": rgb[2]
+                    }
+                })
+        if handle['magnetometerSensor']['value'] == 'true':
+            magnetometer = motion.magnetometer()
+            data.append({
+                'asset': '{}_{}'.format(asset_prefix, handle['magnetometerSensorName']['value']),
+                'timestamp': time_stamp,
+                    'key': str(uuid.uuid4()),
+                    'readings': {
+                        "x": magnetometer[0],
+                        "y": magnetometer[1],
+                        "z": magnetometer[2]
+                    }
+                })
+        if handle['accelerometerSensor']['value'] == 'true':
+            accelerometer = [round(x,2) for x in motion.accelerometer()]
+            data.append({
+                'asset': '{}_{}'.format(asset_prefix, handle['accelerometerSensorName']['value']),
+                'timestamp': time_stamp,
+                    'key': str(uuid.uuid4()),
+                    'readings': {
+                        "x": accelerometer[0],
+                        "y": accelerometer[1],
+                        "z": accelerometer[2]
+                    }
+                })
+        if handle['altitudeSensor']['value'] == 'true':
+            altitude = weather.altitude() # Supply your local qnh for more accurate readings
+            data.append({
+                'asset': '{}_{}'.format(asset_prefix, handle['altitudeSensorName']['value']),
+                'timestamp': time_stamp,
+                    'key': str(uuid.uuid4()),
+                    'readings': {
+                        "altitude": altitude,
+                    }
+                })
+        if handle['temperatureSensor']['value'] == 'true':
+            temperature = weather.temperature()
+            data.append({
+                'asset': '{}_{}'.format(asset_prefix, handle['temperatureSensorName']['value']),
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
-                    "r": rgb[0],
-                    "g": rgb[1],
-                    "b": rgb[2]
-                }
-            })
-        data.append({
-                'asset': 'envirophat/magnetometer',
-                'timestamp': time_stamp,
-                'key': str(uuid.uuid4()),
-                'readings': {
-                    "x": magnetometer[0],
-                    "y": magnetometer[1],
-                    "z": magnetometer[2]
-                }
-            })
-        data.append({
-                'asset': 'envirophat/accelerometer',
-                'timestamp': time_stamp,
-                'key': str(uuid.uuid4()),
-                'readings': {
-                    "x": accelerometer[0],
-                    "y": accelerometer[1],
-                    "z": accelerometer[2]
-                }
-            })
-        data.append({
-                'asset': 'envirophat/weather',
-                'timestamp': time_stamp,
-                'key': str(uuid.uuid4()),
-                'readings': {
-                    "altitude": altitude,
-                    "pressure": pressure,
                     "temperature": temperature
                 }
             })
+        if handle['pressureSensor']['value'] == 'true':
+            pressure = weather.pressure(unit=unit)
+            data.append({
+                    'asset': '{}_{}'.format(asset_prefix, handle['pressureSensorName']['value']),
+                    'timestamp': time_stamp,
+                    'key': str(uuid.uuid4()),
+                    'readings': {
+                        "pressure": pressure,
+                    }
+                })
     except (Exception, RuntimeError, pexpect.exceptions.TIMEOUT) as ex:
         _LOGGER.exception("Enviro pHAT exception: {}".format(str(ex)))
         raise exceptions.DataRetrievalError(ex)
 
-    _LOGGER.debug("Enviro pHAT reading: {}".format(json.dumps(data)))
     return data
 
 
@@ -166,7 +252,7 @@ def plugin_reconfigure(handle, new_config):
         new_handle = copy.deepcopy(new_config)
         new_handle['restart'] = 'no'
     else:
-        new_handle = copy.deepcopy(handle)
+        new_handle = copy.deepcopy(new_config)
         new_handle['restart'] = 'no'
     return new_handle
 
