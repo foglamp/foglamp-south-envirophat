@@ -220,17 +220,6 @@ def plugin_reconfigure(handle, new_config):
     return new_handle
 
 
-def _plugin_stop(handle):
-    """ Stops the plugin doing required cleanup, to be called prior to the South device service being shut down.
-
-    Args:
-        handle: handle returned by the plugin initialisation call
-    Returns:
-    Raises:
-    """
-    _LOGGER.info('Enviro pHAT poll plugin stop.')
-
-
 def plugin_shutdown(handle):
     """ Shutdowns the plugin doing required cleanup, to be called prior to the South device service being shut down.
 
@@ -239,5 +228,4 @@ def plugin_shutdown(handle):
     Returns:
     Raises:
     """
-    _plugin_stop(handle)
     _LOGGER.info('Enviro pHAT poll plugin shut down.')
