@@ -71,7 +71,7 @@ _DEFAULT_CONFIG = {
     'weatherSensor': {
         'description': 'Enable weather sensor',
         'type': 'boolean',
-        'default': 'false',
+        'default': 'true',
     },
     'weatherSensorName': {
         'description': 'Name of weather sensor',
