@@ -38,15 +38,15 @@ _DEFAULT_CONFIG = {
         'default': 'envirophat',
         'order': '2'
     },
-    'lightSensor': {
-        'description': 'Enable light sensor',
+    'rgbSensor': {
+        'description': 'Enable rgb sensor',
         'type': 'boolean',
         'default': 'false',
     },
-    'lightSensorName': {
-        'description': 'Name of light sensor',
+    'rgbSensorName': {
+        'description': 'Name of rgb sensor',
         'type': 'string',
-        'default': 'luminance',
+        'default': 'rgb',
     },
     'magnetometerSensor': {
         'description': 'Enable magnetometer sensor',
@@ -68,35 +68,15 @@ _DEFAULT_CONFIG = {
         'type': 'string',
         'default': 'accelerometer',
     },
-    'altitudeSensor': {
-        'description': 'Enable altitude sensor',
+    'weatherSensor': {
+        'description': 'Enable weather sensor',
         'type': 'boolean',
         'default': 'false',
     },
-    'altitudeSensorName': {
-        'description': 'Name of altitude sensor',
+    'weatherSensorName': {
+        'description': 'Name of weather sensor',
         'type': 'string',
-        'default': 'magnetometer',
-    },
-    'temperatureSensor': {
-        'description': 'Enable temperature sensor',
-        'type': 'boolean',
-        'default': 'true',
-    },
-    'temperatureSensorName': {
-        'description': 'Name of temperature sensor',
-        'type': 'string',
-        'default': 'temperature',
-    },
-    'pressureSensor': {
-        'description': 'Enable pressure sensor',
-        'type': 'boolean',
-        'default': 'false',
-    },
-    'pressureSensorName': {
-        'description': 'Name of pressure sensor',
-        'type': 'string',
-        'default': 'pressure',
+        'default': 'weather',
     },
 }
 
@@ -155,10 +135,10 @@ def plugin_poll(handle):
     asset_prefix = handle['assetPrefix']['value']
 
     try:
-        if handle['lightSensor']['value'] == 'true':
+        if handle['rgbSensor']['value'] == 'true':
             rgb = light.rgb()
             data.append({
-                'asset': '{}_{}'.format(asset_prefix, handle['lightSensorName']['value']),
+                'asset': '{}_{}'.format(asset_prefix, handle['rgbSensorName']['value']),
                 'timestamp': time_stamp,
                     'key': str(uuid.uuid4()),
                     'readings': {
@@ -191,33 +171,17 @@ def plugin_poll(handle):
                         "z": accelerometer[2]
                     }
                 })
-        if handle['altitudeSensor']['value'] == 'true':
-            altitude = weather.altitude() # Supply your local qnh for more accurate readings
+        if handle['weatherSensor']['value'] == 'true':
+            altitude = weather.altitude()
+            temperature = weather.temperature()
+            pressure = weather.pressure(unit=unit)
             data.append({
-                'asset': '{}_{}'.format(asset_prefix, handle['altitudeSensorName']['value']),
+                'asset': '{}_{}'.format(asset_prefix, handle['weatherSensorName']['value']),
                 'timestamp': time_stamp,
                     'key': str(uuid.uuid4()),
                     'readings': {
                         "altitude": altitude,
-                    }
-                })
-        if handle['temperatureSensor']['value'] == 'true':
-            temperature = weather.temperature()
-            data.append({
-                'asset': '{}_{}'.format(asset_prefix, handle['temperatureSensorName']['value']),
-                'timestamp': time_stamp,
-                'key': str(uuid.uuid4()),
-                'readings': {
-                    "temperature": temperature
-                }
-            })
-        if handle['pressureSensor']['value'] == 'true':
-            pressure = weather.pressure(unit=unit)
-            data.append({
-                    'asset': '{}_{}'.format(asset_prefix, handle['pressureSensorName']['value']),
-                    'timestamp': time_stamp,
-                    'key': str(uuid.uuid4()),
-                    'readings': {
+                        "temperature": temperature,
                         "pressure": pressure,
                     }
                 })
