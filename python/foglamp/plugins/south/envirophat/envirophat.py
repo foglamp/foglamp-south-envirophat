@@ -8,7 +8,6 @@
 
 import copy
 import datetime
-import json
 import uuid
 from envirophat import light, weather, motion, analog
 
@@ -222,7 +221,7 @@ def plugin_poll(handle):
                         "pressure": pressure,
                     }
                 })
-    except (Exception, RuntimeError, pexpect.exceptions.TIMEOUT) as ex:
+    except (Exception, RuntimeError) as ex:
         _LOGGER.exception("Enviro pHAT exception: {}".format(str(ex)))
         raise exceptions.DataRetrievalError(ex)
 
