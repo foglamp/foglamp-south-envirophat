@@ -32,8 +32,8 @@ _DEFAULT_CONFIG = {
         'type': 'integer',
         'default': '1000'
     },
-    'assetPrefix': {
-        'description': 'Asset prefix',
+    'assetName': {
+        'description': 'Asset name',
         'type': 'string',
         'default': 'envirophat',
         'order': '2'
@@ -132,7 +132,7 @@ def plugin_poll(handle):
     unit = 'hPa' # Pressure unit, can be either hPa (hectopascals) or Pa (pascals)
     time_stamp = str(datetime.datetime.now(tz=datetime.timezone.utc))
     data = list()
-    asset_prefix = handle['assetPrefix']['value']
+    asset_prefix = handle['assetName']['value']
 
     try:
         if handle['rgbSensor']['value'] == 'true':
