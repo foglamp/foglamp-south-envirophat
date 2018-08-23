@@ -8,30 +8,85 @@
 
 import copy
 import datetime
-import json
 import uuid
-from envirophat import light, weather, motion, analog
+from envirophat import light, weather, motion       # unused: analog
 
 from foglamp.common import logger
 from foglamp.plugins.common import utils
 from foglamp.services.south import exceptions
 
 
-__author__ = "Ashwin Gopalakrishnan"
+__author__ = "Ashwin Gopalakrishnan, Amarendra K Sinha"
 __copyright__ = "Copyright (c) 2018 OSIsoft, LLC"
 __license__ = "Apache 2.0"
 __version__ = "${VERSION}"
 
 _DEFAULT_CONFIG = {
     'plugin': {
-         'description': 'Enviro pHAT Poll Plugin',
-         'type': 'string',
-         'default': 'envirophat'
+        'description': 'Enviro pHAT Poll Plugin',
+        'type': 'string',
+        'default': 'envirophat',
+        'readonly': 'true'
     },
     'pollInterval': {
-        'description': 'The interval between poll calls to the South device poll routine expressed in milliseconds.',
+        'description': 'Interval between calls to the South device poll routine in milliseconds',
         'type': 'integer',
-        'default': '1000'
+        'default': '1000',
+        'order': '1'
+    },
+    'assetNamePrefix': {
+        'description': 'Prefix of asset name',
+        'type': 'string',
+        'default': 'envirophat',
+        'order': '2'
+    },
+    'rgbSensor': {
+        'description': 'Enable RGB sensor',
+        'type': 'boolean',
+        'default': 'false',
+        'order': '3'
+    },
+    'rgbSensorName': {
+        'description': 'Asset name of RGB sensor',
+        'type': 'string',
+        'default': 'rgb',
+        'order': '4'
+    },
+    'magnetometerSensor': {
+        'description': 'Enable magnetometer sensor',
+        'type': 'boolean',
+        'default': 'false',
+        'order': '5'
+    },
+    'magnetometerSensorName': {
+        'description': 'Asset name of magnetometer sensor',
+        'type': 'string',
+        'default': 'magnetometer',
+        'order': '6'
+    },
+    'accelerometerSensor': {
+        'description': 'Enable accelerometer sensor',
+        'type': 'boolean',
+        'default': 'false',
+        'order': '7'
+    },
+    'accelerometerSensorName': {
+        'description': 'Asset name of accelerometer sensor',
+        'type': 'string',
+        'default': 'accelerometer',
+        'order': '8'
+    },
+    'weatherSensor': {
+        'description': 'Enable weather sensor',
+        'type': 'boolean',
+        'default': 'true',
+        'order': '9'
+    },
+    'weatherSensorName': {
+        'description': 'Asset name of weather sensor',
+        'type': 'string',
+        'default': 'weather',
+        'order': '10'
     },
 }
 
@@ -84,19 +139,16 @@ def plugin_poll(handle):
         DataRetrievalError
     """
 
-    unit = 'hPa' # Pressure unit, can be either hPa (hectopascals) or Pa (pascals)
+    unit = 'hPa'    # Pressure unit, can be either hPa (hectopascals) or Pa (pascals)
     time_stamp = str(datetime.datetime.now(tz=datetime.timezone.utc))
     data = list()
+    asset_prefix = handle['assetNamePrefix']['value']
 
     try:
-        rgb = light.rgb()
-        magnetometer = motion.magnetometer()
-        accelerometer = [round(x,2) for x in motion.accelerometer()]
-        altitude = weather.altitude() # Supply your local qnh for more accurate readings
-        temperature = weather.temperature()
-        pressure = weather.pressure(unit=unit)
-        data.append({
-                'asset': 'envirophat/rgb',
+        if handle['rgbSensor']['value'] == 'true':
+            rgb = light.rgb()
+            data.append({
+                'asset': '{}_{}'.format(asset_prefix, handle['rgbSensorName']['value']),
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -105,8 +157,10 @@ def plugin_poll(handle):
                     "b": rgb[2]
                 }
             })
-        data.append({
-                'asset': 'envirophat/magnetometer',
+        if handle['magnetometerSensor']['value'] == 'true':
+            magnetometer = motion.magnetometer()
+            data.append({
+                'asset': '{}_{}'.format(asset_prefix, handle['magnetometerSensorName']['value']),
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -115,8 +169,10 @@ def plugin_poll(handle):
                     "z": magnetometer[2]
                 }
             })
-        data.append({
-                'asset': 'envirophat/accelerometer',
+        if handle['accelerometerSensor']['value'] == 'true':
+            accelerometer = [round(x, 2) for x in motion.accelerometer()]
+            data.append({
+                'asset': '{}_{}'.format(asset_prefix, handle['accelerometerSensorName']['value']),
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -125,21 +181,24 @@ def plugin_poll(handle):
                     "z": accelerometer[2]
                 }
             })
-        data.append({
-                'asset': 'envirophat/weather',
+        if handle['weatherSensor']['value'] == 'true':
+            altitude = weather.altitude()
+            temperature = weather.temperature()
+            pressure = weather.pressure(unit=unit)
+            data.append({
+                'asset': '{}_{}'.format(asset_prefix, handle['weatherSensorName']['value']),
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
                     "altitude": altitude,
+                    "temperature": temperature,
                     "pressure": pressure,
-                    "temperature": temperature
                 }
             })
-    except (Exception, RuntimeError, pexpect.exceptions.TIMEOUT) as ex:
+    except (Exception, RuntimeError) as ex:
         _LOGGER.exception("Enviro pHAT exception: {}".format(str(ex)))
         raise exceptions.DataRetrievalError(ex)
 
-    _LOGGER.debug("Enviro pHAT reading: {}".format(json.dumps(data)))
     return data
 
 
@@ -166,20 +225,9 @@ def plugin_reconfigure(handle, new_config):
         new_handle = copy.deepcopy(new_config)
         new_handle['restart'] = 'no'
     else:
-        new_handle = copy.deepcopy(handle)
+        new_handle = copy.deepcopy(new_config)
         new_handle['restart'] = 'no'
     return new_handle
-
-
-def _plugin_stop(handle):
-    """ Stops the plugin doing required cleanup, to be called prior to the South device service being shut down.
-
-    Args:
-        handle: handle returned by the plugin initialisation call
-    Returns:
-    Raises:
-    """
-    _LOGGER.info('Enviro pHAT poll plugin stop.')
 
 
 def plugin_shutdown(handle):
@@ -190,5 +238,4 @@ def plugin_shutdown(handle):
     Returns:
     Raises:
     """
-    _plugin_stop(handle)
     _LOGGER.info('Enviro pHAT poll plugin shut down.')
