@@ -140,7 +140,7 @@ def plugin_poll(handle):
     """
 
     unit = 'hPa'    # Pressure unit, can be either hPa (hectopascals) or Pa (pascals)
-    time_stamp = str(datetime.datetime.now(tz=datetime.timezone.utc))
+    time_stamp = utils.local_timestamp()
     data = list()
     asset_prefix = handle['assetNamePrefix']['value']
 
