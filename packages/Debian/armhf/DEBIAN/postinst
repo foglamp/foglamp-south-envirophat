@@ -31,20 +31,5 @@ set_files_ownership () {
     chown -R root:root /usr/local/foglamp/python/foglamp/plugins/south/envirophat
 }
 
-add_service () {
-    output=$(curl -sX POST http://localhost:8081/foglamp/service -d '{"name": "envirophat", "type": "south", "plugin": "envirophat"}')
-    service_id=$(echo $output | awk -F '"id": ' '{print $2}' | awk -F \" '{print $2}')
-    echo $service_id
-}
-
-enable_service () {
-    service_id=$1
-    echo $service_id
-    output=$(curl -X PUT -d '{"enabled": true}' http://localhost:8081/foglamp/schedule/$service_id)
-    echo $output
-}
-
 set_files_ownership
-SERVICE_ID=$(add_service)
-enable_service $SERVICE_ID
-echo "Enviro pHAT plugin installed. Restart FogLAMP to enable the plugin."
+echo "Enviro pHAT plugin is installed."
