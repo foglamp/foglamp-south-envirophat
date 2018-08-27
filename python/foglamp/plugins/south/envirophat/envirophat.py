@@ -37,13 +37,13 @@ _DEFAULT_CONFIG = {
     'assetNamePrefix': {
         'description': 'Prefix of asset name',
         'type': 'string',
-        'default': 'envirophat',
+        'default': 'envirophat/',
         'order': '2'
     },
     'rgbSensor': {
         'description': 'Enable RGB sensor',
         'type': 'boolean',
-        'default': 'false',
+        'default': 'true',
         'order': '3'
     },
     'rgbSensorName': {
@@ -55,7 +55,7 @@ _DEFAULT_CONFIG = {
     'magnetometerSensor': {
         'description': 'Enable magnetometer sensor',
         'type': 'boolean',
-        'default': 'false',
+        'default': 'true',
         'order': '5'
     },
     'magnetometerSensorName': {
@@ -67,7 +67,7 @@ _DEFAULT_CONFIG = {
     'accelerometerSensor': {
         'description': 'Enable accelerometer sensor',
         'type': 'boolean',
-        'default': 'false',
+        'default': 'true',
         'order': '7'
     },
     'accelerometerSensorName': {
@@ -148,7 +148,7 @@ def plugin_poll(handle):
         if handle['rgbSensor']['value'] == 'true':
             rgb = light.rgb()
             data.append({
-                'asset': '{}_{}'.format(asset_prefix, handle['rgbSensorName']['value']),
+                'asset': '{}{}'.format(asset_prefix, handle['rgbSensorName']['value']),
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -160,7 +160,7 @@ def plugin_poll(handle):
         if handle['magnetometerSensor']['value'] == 'true':
             magnetometer = motion.magnetometer()
             data.append({
-                'asset': '{}_{}'.format(asset_prefix, handle['magnetometerSensorName']['value']),
+                'asset': '{}{}'.format(asset_prefix, handle['magnetometerSensorName']['value']),
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -172,7 +172,7 @@ def plugin_poll(handle):
         if handle['accelerometerSensor']['value'] == 'true':
             accelerometer = [round(x, 2) for x in motion.accelerometer()]
             data.append({
-                'asset': '{}_{}'.format(asset_prefix, handle['accelerometerSensorName']['value']),
+                'asset': '{}{}'.format(asset_prefix, handle['accelerometerSensorName']['value']),
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
@@ -186,7 +186,7 @@ def plugin_poll(handle):
             temperature = weather.temperature()
             pressure = weather.pressure(unit=unit)
             data.append({
-                'asset': '{}_{}'.format(asset_prefix, handle['weatherSensorName']['value']),
+                'asset': '{}{}'.format(asset_prefix, handle['weatherSensorName']['value']),
                 'timestamp': time_stamp,
                 'key': str(uuid.uuid4()),
                 'readings': {
