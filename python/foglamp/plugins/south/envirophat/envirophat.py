@@ -9,7 +9,7 @@
 import copy
 import datetime
 import uuid
-from envirophat import light, weather, motion, analog
+from envirophat import light, weather, motion       # unused: analog
 
 from foglamp.common import logger
 from foglamp.plugins.common import utils
@@ -23,60 +23,70 @@ __version__ = "${VERSION}"
 
 _DEFAULT_CONFIG = {
     'plugin': {
-         'description': 'Enviro pHAT Poll Plugin',
-         'type': 'string',
-         'default': 'envirophat'
+        'description': 'Enviro pHAT Poll Plugin',
+        'type': 'string',
+        'default': 'envirophat',
+        'readonly': 'true'
     },
     'pollInterval': {
-        'description': 'The interval between poll calls to the South device poll routine expressed in milliseconds.',
+        'description': 'Interval between calls to the South device poll routine in milliseconds',
         'type': 'integer',
-        'default': '1000'
+        'default': '1000',
+        'order': '1'
     },
-    'assetName': {
-        'description': 'Asset name',
+    'assetNamePrefix': {
+        'description': 'Prefix of asset name',
         'type': 'string',
         'default': 'envirophat',
         'order': '2'
     },
     'rgbSensor': {
-        'description': 'Enable rgb sensor',
+        'description': 'Enable RGB sensor',
         'type': 'boolean',
         'default': 'false',
+        'order': '3'
     },
     'rgbSensorName': {
-        'description': 'Name of rgb sensor',
+        'description': 'Asset name of RGB sensor',
         'type': 'string',
         'default': 'rgb',
+        'order': '4'
     },
     'magnetometerSensor': {
         'description': 'Enable magnetometer sensor',
         'type': 'boolean',
         'default': 'false',
+        'order': '5'
     },
     'magnetometerSensorName': {
-        'description': 'Name of magnetometer sensor',
+        'description': 'Asset name of magnetometer sensor',
         'type': 'string',
         'default': 'magnetometer',
+        'order': '6'
     },
     'accelerometerSensor': {
         'description': 'Enable accelerometer sensor',
         'type': 'boolean',
         'default': 'false',
+        'order': '7'
     },
     'accelerometerSensorName': {
-        'description': 'Name of accelerometer sensor',
+        'description': 'Asset name of accelerometer sensor',
         'type': 'string',
         'default': 'accelerometer',
+        'order': '8'
     },
     'weatherSensor': {
         'description': 'Enable weather sensor',
         'type': 'boolean',
         'default': 'true',
+        'order': '9'
     },
     'weatherSensorName': {
-        'description': 'Name of weather sensor',
+        'description': 'Asset name of weather sensor',
         'type': 'string',
         'default': 'weather',
+        'order': '10'
     },
 }
 
@@ -129,10 +139,10 @@ def plugin_poll(handle):
         DataRetrievalError
     """
 
-    unit = 'hPa' # Pressure unit, can be either hPa (hectopascals) or Pa (pascals)
+    unit = 'hPa'    # Pressure unit, can be either hPa (hectopascals) or Pa (pascals)
     time_stamp = str(datetime.datetime.now(tz=datetime.timezone.utc))
     data = list()
-    asset_prefix = handle['assetName']['value']
+    asset_prefix = handle['assetNamePrefix']['value']
 
     try:
         if handle['rgbSensor']['value'] == 'true':
@@ -140,37 +150,37 @@ def plugin_poll(handle):
             data.append({
                 'asset': '{}_{}'.format(asset_prefix, handle['rgbSensorName']['value']),
                 'timestamp': time_stamp,
-                    'key': str(uuid.uuid4()),
-                    'readings': {
-                        "r": rgb[0],
-                        "g": rgb[1],
-                        "b": rgb[2]
-                    }
-                })
+                'key': str(uuid.uuid4()),
+                'readings': {
+                    "r": rgb[0],
+                    "g": rgb[1],
+                    "b": rgb[2]
+                }
+            })
         if handle['magnetometerSensor']['value'] == 'true':
             magnetometer = motion.magnetometer()
             data.append({
                 'asset': '{}_{}'.format(asset_prefix, handle['magnetometerSensorName']['value']),
                 'timestamp': time_stamp,
-                    'key': str(uuid.uuid4()),
-                    'readings': {
-                        "x": magnetometer[0],
-                        "y": magnetometer[1],
-                        "z": magnetometer[2]
-                    }
-                })
+                'key': str(uuid.uuid4()),
+                'readings': {
+                    "x": magnetometer[0],
+                    "y": magnetometer[1],
+                    "z": magnetometer[2]
+                }
+            })
         if handle['accelerometerSensor']['value'] == 'true':
-            accelerometer = [round(x,2) for x in motion.accelerometer()]
+            accelerometer = [round(x, 2) for x in motion.accelerometer()]
             data.append({
                 'asset': '{}_{}'.format(asset_prefix, handle['accelerometerSensorName']['value']),
                 'timestamp': time_stamp,
-                    'key': str(uuid.uuid4()),
-                    'readings': {
-                        "x": accelerometer[0],
-                        "y": accelerometer[1],
-                        "z": accelerometer[2]
-                    }
-                })
+                'key': str(uuid.uuid4()),
+                'readings': {
+                    "x": accelerometer[0],
+                    "y": accelerometer[1],
+                    "z": accelerometer[2]
+                }
+            })
         if handle['weatherSensor']['value'] == 'true':
             altitude = weather.altitude()
             temperature = weather.temperature()
@@ -178,13 +188,13 @@ def plugin_poll(handle):
             data.append({
                 'asset': '{}_{}'.format(asset_prefix, handle['weatherSensorName']['value']),
                 'timestamp': time_stamp,
-                    'key': str(uuid.uuid4()),
-                    'readings': {
-                        "altitude": altitude,
-                        "temperature": temperature,
-                        "pressure": pressure,
-                    }
-                })
+                'key': str(uuid.uuid4()),
+                'readings': {
+                    "altitude": altitude,
+                    "temperature": temperature,
+                    "pressure": pressure,
+                }
+            })
     except (Exception, RuntimeError) as ex:
         _LOGGER.exception("Enviro pHAT exception: {}".format(str(ex)))
         raise exceptions.DataRetrievalError(ex)
