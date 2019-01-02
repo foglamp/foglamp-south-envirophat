@@ -9,6 +9,7 @@
 import copy
 import datetime
 import uuid
+import logging
 from envirophat import light, weather, motion       # unused: analog
 
 from foglamp.common import logger
@@ -32,65 +33,75 @@ _DEFAULT_CONFIG = {
         'description': 'Interval between calls to the South device poll routine in milliseconds',
         'type': 'integer',
         'default': '1000',
-        'order': '1'
+        'order': '1',
+        'displayName': 'Poll Interval'
     },
     'assetNamePrefix': {
         'description': 'Prefix of asset name',
         'type': 'string',
         'default': 'envirophat/',
-        'order': '2'
+        'order': '2',
+        'displayName': 'Asset Name Prefix'
     },
     'rgbSensor': {
         'description': 'Enable RGB sensor',
         'type': 'boolean',
         'default': 'true',
-        'order': '3'
+        'order': '3',
+        'displayName': 'RGB Sensor'
     },
     'rgbSensorName': {
         'description': 'Asset name of RGB sensor',
         'type': 'string',
         'default': 'rgb',
-        'order': '4'
+        'order': '4',
+        'displayName': 'RGB Sensor Name'
     },
     'magnetometerSensor': {
         'description': 'Enable magnetometer sensor',
         'type': 'boolean',
         'default': 'true',
-        'order': '5'
+        'order': '5',
+        'displayName': 'Magnetometer Sensor'
     },
     'magnetometerSensorName': {
         'description': 'Asset name of magnetometer sensor',
         'type': 'string',
         'default': 'magnetometer',
-        'order': '6'
+        'order': '6',
+        'displayName': 'Magnetometer Sensor Name'
     },
     'accelerometerSensor': {
         'description': 'Enable accelerometer sensor',
         'type': 'boolean',
         'default': 'true',
-        'order': '7'
+        'order': '7',
+        'displayName': 'Accelerometer Sensor'
     },
     'accelerometerSensorName': {
         'description': 'Asset name of accelerometer sensor',
         'type': 'string',
         'default': 'accelerometer',
-        'order': '8'
+        'order': '8',
+        'displayName': 'Accelerometer Sensor Name'
     },
     'weatherSensor': {
         'description': 'Enable weather sensor',
         'type': 'boolean',
         'default': 'true',
-        'order': '9'
+        'order': '9',
+        'displayName': 'Weather Sensor'
     },
     'weatherSensorName': {
         'description': 'Asset name of weather sensor',
         'type': 'string',
         'default': 'weather',
-        'order': '10'
+        'order': '10',
+        'displayName': 'Weather Sensor Name'
     },
 }
 
-_LOGGER = logger.setup(__name__, level=20)
+_LOGGER = logger.setup(__name__, level=logging.INFO)
 
 
 def plugin_info():
