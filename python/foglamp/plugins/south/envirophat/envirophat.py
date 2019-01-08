@@ -29,13 +29,6 @@ _DEFAULT_CONFIG = {
         'default': 'envirophat',
         'readonly': 'true'
     },
-    'pollInterval': {
-        'description': 'Interval between calls to the South device poll routine in milliseconds',
-        'type': 'integer',
-        'default': '1000',
-        'order': '1',
-        'displayName': 'Poll Interval'
-    },
     'assetNamePrefix': {
         'description': 'Prefix of asset name',
         'type': 'string',
