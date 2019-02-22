@@ -13,7 +13,6 @@ from envirophat import light, weather, motion       # unused: analog
 
 from foglamp.common import logger
 from foglamp.plugins.common import utils
-from foglamp.services.south import exceptions
 
 
 __author__ = "Ashwin Gopalakrishnan, Amarendra K Sinha"
@@ -200,7 +199,7 @@ def plugin_poll(handle):
             })
     except (Exception, RuntimeError) as ex:
         _LOGGER.exception("Enviro pHAT exception: {}".format(str(ex)))
-        raise exceptions.DataRetrievalError(ex)
+        raise ex
 
     return data
 
