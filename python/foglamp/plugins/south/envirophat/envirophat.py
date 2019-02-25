@@ -13,7 +13,6 @@ from envirophat import light, weather, motion       # unused: analog
 
 from foglamp.common import logger
 from foglamp.plugins.common import utils
-from foglamp.services.south import exceptions
 
 
 __author__ = "Ashwin Gopalakrishnan, Amarendra K Sinha"
@@ -139,7 +138,7 @@ def plugin_poll(handle):
         returns a sensor reading in a JSON document, as a Python dict, if it is available
         None - If no reading is available
     Raises:
-        DataRetrievalError
+        Exception
     """
 
     unit = 'hPa'    # Pressure unit, can be either hPa (hectopascals) or Pa (pascals)
@@ -198,9 +197,9 @@ def plugin_poll(handle):
                     "pressure": pressure,
                 }
             })
-    except (Exception, RuntimeError) as ex:
+    except Exception as ex:
         _LOGGER.exception("Enviro pHAT exception: {}".format(str(ex)))
-        raise exceptions.DataRetrievalError(ex)
+        raise ex
 
     return data
 
