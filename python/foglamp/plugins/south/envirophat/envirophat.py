@@ -4,16 +4,21 @@
 # See: http://foglamp.readthedocs.io/
 # FOGLAMP_END
 
-""" Module for EnviroHat 'poll' type plugin """
+""" Module for Enviro pHAT 'poll' type plugin """
 
 import copy
 import uuid
 import logging
-from envirophat import light, weather, motion       # unused: analog
 
 from foglamp.common import logger
 from foglamp.plugins.common import utils
 
+_LOGGER = logger.setup(__name__, level=logging.INFO)
+
+try:
+    from envirophat import light, weather, motion       # unused: analog
+except FileNotFoundError:
+    _LOGGER.error("Ensure i2c is enabled on the Pi and other dependencies are installed correctly!")
 
 __author__ = "Ashwin Gopalakrishnan, Amarendra K Sinha"
 __copyright__ = "Copyright (c) 2018 Dianomic Systems"
@@ -91,8 +96,6 @@ _DEFAULT_CONFIG = {
         'displayName': 'Weather Sensor Name'
     },
 }
-
-_LOGGER = logger.setup(__name__, level=logging.INFO)
 
 
 def plugin_info():
