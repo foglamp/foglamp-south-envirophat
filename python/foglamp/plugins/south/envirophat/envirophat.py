@@ -4,17 +4,21 @@
 # See: http://foglamp.readthedocs.io/
 # FOGLAMP_END
 
-""" Module for EnviroHat 'poll' type plugin """
+""" Module for Enviro pHAT 'poll' type plugin """
 
 import copy
 import uuid
 import logging
-from envirophat import light, weather, motion       # unused: analog
 
 from foglamp.common import logger
 from foglamp.plugins.common import utils
-from foglamp.services.south import exceptions
 
+_LOGGER = logger.setup(__name__, level=logging.INFO)
+
+try:
+    from envirophat import light, weather, motion       # unused: analog
+except FileNotFoundError:
+    _LOGGER.error("Ensure i2c is enabled on the Pi and other dependencies are installed correctly!")
 
 __author__ = "Ashwin Gopalakrishnan, Amarendra K Sinha"
 __copyright__ = "Copyright (c) 2018 Dianomic Systems"
@@ -93,8 +97,6 @@ _DEFAULT_CONFIG = {
     },
 }
 
-_LOGGER = logger.setup(__name__, level=logging.INFO)
-
 
 def plugin_info():
     """ Returns information about the plugin.
@@ -139,7 +141,7 @@ def plugin_poll(handle):
         returns a sensor reading in a JSON document, as a Python dict, if it is available
         None - If no reading is available
     Raises:
-        DataRetrievalError
+        Exception
     """
 
     unit = 'hPa'    # Pressure unit, can be either hPa (hectopascals) or Pa (pascals)
@@ -198,9 +200,9 @@ def plugin_poll(handle):
                     "pressure": pressure,
                 }
             })
-    except (Exception, RuntimeError) as ex:
+    except Exception as ex:
         _LOGGER.exception("Enviro pHAT exception: {}".format(str(ex)))
-        raise exceptions.DataRetrievalError(ex)
+        raise ex
 
     return data
 
