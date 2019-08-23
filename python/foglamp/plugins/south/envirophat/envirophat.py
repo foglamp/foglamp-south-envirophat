@@ -35,7 +35,7 @@ _DEFAULT_CONFIG = {
     'assetNamePrefix': {
         'description': 'Prefix of asset name',
         'type': 'string',
-        'default': 'envirophat_',
+        'default': 'e_',
         'order': '2',
         'displayName': 'Asset Name Prefix'
     },
