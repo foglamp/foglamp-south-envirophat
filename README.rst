@@ -1,4 +1,4 @@
-foglamp-south-envirophat
+fledge-south-envirophat
 ========================
 
 South Plugin for Raspberry PI EnviroPHAT
