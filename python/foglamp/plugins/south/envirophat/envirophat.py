@@ -7,7 +7,6 @@
 """ Module for Enviro pHAT 'poll' type plugin """
 
 import copy
-import uuid
 import logging
 
 from foglamp.common import logger
@@ -155,7 +154,6 @@ def plugin_poll(handle):
             data.append({
                 'asset': '{}{}'.format(asset_prefix, handle['rgbSensorName']['value']),
                 'timestamp': time_stamp,
-                'key': str(uuid.uuid4()),
                 'readings': {
                     "r": rgb[0],
                     "g": rgb[1],
@@ -167,7 +165,6 @@ def plugin_poll(handle):
             data.append({
                 'asset': '{}{}'.format(asset_prefix, handle['magnetometerSensorName']['value']),
                 'timestamp': time_stamp,
-                'key': str(uuid.uuid4()),
                 'readings': {
                     "x": magnetometer[0],
                     "y": magnetometer[1],
@@ -179,7 +176,6 @@ def plugin_poll(handle):
             data.append({
                 'asset': '{}{}'.format(asset_prefix, handle['accelerometerSensorName']['value']),
                 'timestamp': time_stamp,
-                'key': str(uuid.uuid4()),
                 'readings': {
                     "x": accelerometer[0],
                     "y": accelerometer[1],
@@ -193,7 +189,6 @@ def plugin_poll(handle):
             data.append({
                 'asset': '{}{}'.format(asset_prefix, handle['weatherSensorName']['value']),
                 'timestamp': time_stamp,
-                'key': str(uuid.uuid4()),
                 'readings': {
                     "altitude": altitude,
                     "temperature": temperature,
